@@ -53,7 +53,24 @@ const STYLES = `
     color: var(--amber);
     letter-spacing: 2px;
     text-transform: uppercase;
+    flex: 1;
   }
+
+  .header-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .header-btn:hover { color: var(--cream); background: var(--surface2); }
+  .header-btn.active { color: var(--amber); }
 
   .main { flex: 1; padding: 16px 16px calc(72px + env(safe-area-inset-bottom)); overflow-x: hidden; }
 
@@ -459,40 +476,6 @@ const STYLES = `
     background: rgba(232,168,56,0.08);
   }
 
-  /* ── Shift header ── */
-  .shift-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-
-  .shift-count-badge {
-    font-size: 13px;
-    font-weight: 600;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 4px 12px;
-    color: var(--text-dim);
-    letter-spacing: 0.3px;
-  }
-
-  .shift-spacer { flex: 1; }
-
-  .show-all-toggle {
-    background: none;
-    border: 2px solid var(--border);
-    border-radius: 5px;
-    color: var(--text-dim);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    padding: 7px 14px;
-    cursor: pointer;
-    transition: color 0.15s, border-color 0.15s;
-    font-family: var(--sans);
-  }
-
-  .show-all-toggle:hover { color: var(--cream); border-color: var(--cream-dim); }
-  .show-all-toggle.active { color: var(--amber); border-color: var(--amber-dim); }
-
   /* ── Shift empty states ── */
   .shift-empty { padding: 64px 0; text-align: center; }
   .shift-empty-text { font-size: 15px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.3px; }
@@ -798,6 +781,19 @@ const StatsIcon = () => (
   </svg>
 );
 
+const FilterIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+  </svg>
+);
+
+const RestockIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <polyline points="1 4 1 10 7 10"/>
+    <path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
+  </svg>
+);
+
 // --- EditablePar ---
 function EditablePar({ value, onSave }) {
   const [editing, setEditing] = useState(false);
@@ -880,9 +876,7 @@ function ShiftCard({ item, onIncrement, onDecrement, onStocked, onAddToOrder }) 
 }
 
 // --- Shift ---
-function Shift({ items, categories, onIncrement, onDecrement, onStocked, onAddToOrder, onRestockAll }) {
-  const [showAll, setShowAll] = useState(true);
-
+function Shift({ items, categories, showAll, onIncrement, onDecrement, onStocked, onAddToOrder }) {
   const belowParItems = items.filter(i => i.left < i.par);
   const visibleItems = showAll ? items : belowParItems;
 
@@ -912,17 +906,6 @@ function Shift({ items, categories, onIncrement, onDecrement, onStocked, onAddTo
 
   return (
     <div>
-      <div className="shift-header no-print">
-        <span className="shift-spacer" />
-        <button
-          className={`show-all-toggle${showAll ? " active" : ""}`}
-          onClick={() => setShowAll(v => !v)}
-        >
-          {showAll ? "Below par" : "Show all"}
-        </button>
-        <button className="btn btn-ghost" onClick={onRestockAll}>Restock all</button>
-      </div>
-
       {groups.length === 0 ? renderEmpty() : (
         groups.map(({ cat, items: groupItems }) => (
           <div className="shift-group" key={cat}>
@@ -1290,6 +1273,7 @@ function Stats({ records, onClear }) {
 // --- App ---
 export default function App() {
   const [tab, setTab] = useState("shift");
+  const [showAll, setShowAll] = useState(true);
   const [items, setItems] = useState(loadItems);
   const [records, setRecords] = useState(() => load(RECORDS_KEY));
   const [categories, setCategories] = useState(() => load(CATEGORIES_KEY, DEFAULT_CATEGORIES));
@@ -1403,6 +1387,20 @@ export default function App() {
       <div className="app">
         <div className="header no-print">
           <div className="header-title">{TABS.find(t => t.id === tab)?.label}</div>
+          {tab === "shift" && (
+            <>
+              <button
+                className={`header-btn${!showAll ? " active" : ""}`}
+                onClick={() => setShowAll(v => !v)}
+                title={showAll ? "Show below par only" : "Show all"}
+              >
+                <FilterIcon />
+              </button>
+              <button className="header-btn" onClick={restockAll} title="Restock all">
+                <RestockIcon />
+              </button>
+            </>
+          )}
         </div>
 
         <div className="main">
@@ -1410,11 +1408,11 @@ export default function App() {
             <Shift
               items={items}
               categories={categories}
+              showAll={showAll}
               onIncrement={increment}
               onDecrement={decrement}
               onStocked={stocked}
               onAddToOrder={addToOrder}
-              onRestockAll={restockAll}
             />
           )}
           {tab === "items" && (
