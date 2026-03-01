@@ -353,9 +353,9 @@ const STYLES = `
 
   .shift-row {
     display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 20px;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
     border-bottom: 1px solid var(--border);
     background: var(--near-black);
     transition: background 0.1s;
@@ -364,7 +364,10 @@ const STYLES = `
   .shift-row:last-child { border-bottom: none; }
   .shift-row:hover { background: var(--surface); }
 
-  .shift-row .cat-badge { width: 96px; text-align: center; flex-shrink: 0; }
+  .shift-row-top { display: flex; align-items: center; gap: 10px; }
+  .shift-row-bottom { display: flex; align-items: center; gap: 10px; }
+  .shift-row-spacer { flex: 1; }
+  .shift-unit-label { font-family: var(--mono); font-size: 12px; color: var(--text-dim); flex-shrink: 0; }
 
   .shift-row-name {
     font-weight: 600;
@@ -599,6 +602,36 @@ const STYLES = `
   .print-date { display: none; }
   .print-heading { display: none; }
 
+  /* ── Desktop: shift row in one horizontal line ── */
+  @media (min-width: 640px) {
+    .shift-row { flex-direction: row; align-items: center; gap: 14px; padding: 14px 20px; }
+    .shift-row-top { display: contents; }
+    .shift-row-bottom { display: contents; }
+    .shift-row-spacer { display: none; }
+    .order-flag-btn { order: 10; }
+    .stocked-btn { width: 128px; }
+    .order-flag-btn { width: 96px; }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 639px) {
+    .header { padding: 14px 16px; }
+    .header-sub { display: none; }
+    .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .tab { padding: 12px 14px; font-size: 11px; flex-shrink: 0; white-space: nowrap; }
+    .main { padding: 20px 16px; }
+    .add-form { padding: 16px 18px; }
+    .categories-section { padding: 16px 18px; }
+    .stepper-btn { width: 44px; height: 44px; font-size: 20px; }
+    .stepper-count { min-width: 48px; font-size: 18px; padding: 8px 10px; }
+    .stocked-btn { width: auto; flex: 1; font-size: 13px; }
+    .order-flag-btn { width: auto; }
+    .stats-header { flex-wrap: wrap; }
+    .order-header { flex-wrap: wrap; }
+    .stats-nav { padding: 10px 14px; }
+    .shift-header { margin-bottom: 16px; }
+  }
+
   @media print {
     .no-print { display: none !important; }
     .main { padding: 0; }
@@ -713,29 +746,31 @@ function ShiftRow({ item, onIncrement, onDecrement, onStocked, onAddToOrder }) {
 
   return (
     <div className="shift-row">
-      <span className="shift-row-name">{item.name}</span>
-      <span className="cat-badge">{item.category}</span>
-      <div className="stepper">
-        <button className="stepper-btn" onClick={() => onDecrement(item.id)}>−</button>
-        <span className={countClass}>{item.left}</span>
-        <button className="stepper-btn" onClick={() => onIncrement(item.id)}>+</button>
+      <div className="shift-row-top">
+        <span className="shift-row-name">{item.name}</span>
+        <button
+          className={`order-flag-btn${ordered ? " flagged" : ""}`}
+          onClick={() => onAddToOrder(item.id)}
+        >
+          {ordered ? `⊕ ${item.orderQty}` : "⊕ Order"}
+        </button>
       </div>
-      <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--text-dim)", flexShrink: 0 }}>
-        {item.stockUnit}
-      </span>
-      <button
-        className={`stocked-btn${belowPar ? " needs-restock" : ""}`}
-        onClick={() => belowPar && onStocked(item.id)}
-        title={belowPar ? `Reset to par (${item.par})` : "Already at par"}
-      >
-        {belowPar ? `${item.par - item.left} Stocked` : "Stocked"}
-      </button>
-      <button
-        className={`order-flag-btn${ordered ? " flagged" : ""}`}
-        onClick={() => onAddToOrder(item.id)}
-      >
-        {ordered ? `⊕ ${item.orderQty}` : "⊕ Order"}
-      </button>
+      <div className="shift-row-bottom">
+        <div className="stepper">
+          <button className="stepper-btn" onClick={() => onDecrement(item.id)}>−</button>
+          <span className={countClass}>{item.left}</span>
+          <button className="stepper-btn" onClick={() => onIncrement(item.id)}>+</button>
+        </div>
+        <span className="shift-unit-label">{item.stockUnit}</span>
+        <span className="shift-row-spacer" />
+        <button
+          className={`stocked-btn${belowPar ? " needs-restock" : ""}`}
+          onClick={() => belowPar && onStocked(item.id)}
+          title={belowPar ? `Reset to par (${item.par})` : "Already at par"}
+        >
+          {belowPar ? `${item.par - item.left} Stocked` : "Stocked"}
+        </button>
+      </div>
     </div>
   );
 }
