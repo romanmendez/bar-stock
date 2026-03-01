@@ -524,6 +524,40 @@ const STYLES = `
     color: var(--text-dim);
   }
 
+  /* ── Par stepper (item card) ── */
+  .par-stepper { display: flex; align-items: stretch; }
+
+  .par-stepper-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+
+  .par-stepper-btn:first-child { border-radius: 8px 0 0 8px; }
+  .par-stepper-btn:last-child  { border-radius: 0 8px 8px 0; }
+
+  .par-stepper-count {
+    min-width: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-dim);
+  }
+
   /* ── Order cards ── */
   .order-card {
     background: var(--surface);
@@ -837,7 +871,7 @@ function ShiftCard({ item, onIncrement, onDecrement, onStocked, onAddToOrder }) 
       {belowPar && (
         <div className="shift-card-footer">
           <button className="stocked-btn-full" onClick={() => onStocked(item.id)}>
-            Pull {item.par - item.left} → Stocked
+            Stock {item.par - item.left}
           </button>
         </div>
       )}
@@ -879,7 +913,6 @@ function Shift({ items, categories, onIncrement, onDecrement, onStocked, onAddTo
   return (
     <div>
       <div className="shift-header no-print">
-        <span className="shift-count-badge">{belowParItems.length} below par</span>
         <span className="shift-spacer" />
         <button
           className={`show-all-toggle${showAll ? " active" : ""}`}
@@ -1051,7 +1084,11 @@ function ItemCard({ item, onDelete, onEditPar }) {
         <span>·</span><span>{item.stockUnit}</span>
         <span>·</span><span>{item.orderUnit}</span>
         <span>· par</span>
-        <EditablePar value={item.par} onSave={v => onEditPar(item.id, v)} />
+        <div className="par-stepper">
+          <button className="par-stepper-btn" onClick={() => onEditPar(item.id, Math.max(1, item.par - 1))}>−</button>
+          <span className="par-stepper-count">{item.par}</span>
+          <button className="par-stepper-btn" onClick={() => onEditPar(item.id, item.par + 1)}>+</button>
+        </div>
       </div>
     </div>
   );
