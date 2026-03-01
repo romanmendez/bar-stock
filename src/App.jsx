@@ -36,59 +36,26 @@ const STYLES = `
 
   /* ── Header ── */
   .header {
-    padding: 22px 40px;
+    padding: 14px 16px;
     border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
     gap: 20px;
     background: var(--near-black);
+    position: sticky;
+    top: 0;
+    z-index: 50;
   }
 
   .header-title {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 800;
     color: var(--amber);
     letter-spacing: 4px;
     text-transform: uppercase;
   }
 
-  .header-sep {
-    width: 1px;
-    height: 16px;
-    background: var(--border);
-    flex-shrink: 0;
-  }
-
-  .header-sub {
-    font-size: 12px;
-    font-weight: 400;
-    color: var(--text-dim);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-  }
-
-  /* ── Tabs ── */
-  .tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--near-black); }
-
-  .tab {
-    padding: 14px 30px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    cursor: pointer;
-    border: none;
-    background: none;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-    transition: color 0.15s, border-color 0.15s;
-  }
-
-  .tab:hover { color: var(--cream); }
-  .tab.active { color: var(--amber); border-bottom-color: var(--amber); }
-
-  .main { flex: 1; padding: 36px 40px; overflow-x: hidden; }
+  .main { flex: 1; padding: 16px 16px calc(72px + env(safe-area-inset-bottom)); overflow-x: hidden; }
 
   /* ── Category badge ── */
   .cat-badge {
@@ -299,8 +266,206 @@ const STYLES = `
 
   .category-add-row { display: flex; gap: 10px; align-items: center; }
 
-  /* ── Shift tab ── */
-  .shift-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  /* ── Trash button ── */
+  .trash-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 6px 8px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .trash-btn:hover { color: var(--red); background: rgba(192, 57, 43, 0.1); }
+
+  /* ── Bottom nav ── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    background: var(--near-black);
+    border-top: 1px solid var(--border);
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 100;
+    min-height: 56px;
+  }
+
+  .bottom-nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    position: relative;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 8px 4px;
+    transition: color 0.15s;
+    font-family: var(--sans);
+  }
+
+  .bottom-nav-btn.active { color: var(--amber); }
+
+  .bottom-nav-badge {
+    position: absolute;
+    top: 6px;
+    right: calc(50% - 18px);
+    background: var(--amber);
+    color: var(--black);
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 800;
+    min-width: 18px;
+    text-align: center;
+    line-height: 16px;
+    padding: 0 4px;
+  }
+
+  /* ── Shift group ── */
+  .shift-group { margin-bottom: 20px; }
+
+  .shift-group-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    padding-left: 2px;
+  }
+
+  /* ── Shift card ── */
+  .shift-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .shift-card.below-par { border-color: var(--amber-dim); }
+
+  .shift-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px 12px;
+  }
+
+  .shift-card-name {
+    font-size: 16px;
+    font-weight: 600;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ── Card stepper ── */
+  .shift-card-stepper {
+    display: flex;
+    align-items: stretch;
+    padding: 0 16px 14px;
+  }
+
+  .card-stepper-btn {
+    width: 52px;
+    height: 52px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+
+  .card-stepper-btn:first-child { border-radius: 10px 0 0 10px; }
+  .card-stepper-btn:last-child  { border-radius: 0 10px 10px 0; }
+
+  .card-stepper-middle {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    min-height: 52px;
+  }
+
+  .card-stepper-count {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-dim);
+  }
+
+  .card-stepper-count.below-par { color: var(--amber); }
+  .card-stepper-count.empty { color: var(--red); }
+
+  .card-stepper-unit {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+
+  /* ── Stocked button ── */
+  .shift-card-footer { padding: 0 16px 14px; }
+
+  .stocked-btn-full {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid var(--amber-dim);
+    background: rgba(232,168,56,0.08);
+    color: var(--amber);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+
+  .stocked-btn-full:hover { background: rgba(232,168,56,0.18); }
+
+  /* ── Order pill ── */
+  .order-pill {
+    padding: 6px 12px;
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+    background: none;
+    color: var(--text-dim);
+    cursor: pointer;
+  }
+
+  .order-pill.flagged {
+    border-color: var(--amber-dim);
+    color: var(--amber);
+    background: rgba(232,168,56,0.08);
+  }
+
+  /* ── Shift header ── */
+  .shift-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 
   .shift-count-badge {
     font-size: 12px;
@@ -327,207 +492,121 @@ const STYLES = `
     padding: 7px 14px;
     cursor: pointer;
     transition: color 0.15s, border-color 0.15s;
+    font-family: var(--sans);
   }
 
   .show-all-toggle:hover { color: var(--cream); border-color: var(--cream-dim); }
   .show-all-toggle.active { color: var(--amber); border-color: var(--amber-dim); }
 
-  .shift-list {
-    display: flex;
-    flex-direction: column;
+  /* ── Shift empty states ── */
+  .shift-empty { padding: 64px 0; text-align: center; }
+  .shift-empty-text { font-size: 14px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.3px; }
+
+  /* ── Item cards ── */
+  .item-card {
+    background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
+    border-radius: 12px;
+    margin-bottom: 10px;
   }
 
-  .shift-group-header {
-    padding: 8px 20px;
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+  .item-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px 10px;
+  }
+
+  .item-card-name { font-size: 16px; font-weight: 600; flex: 1; }
+
+  .item-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 0 16px 14px;
+    font-size: 12px;
     color: var(--text-dim);
   }
 
-  .shift-row {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--border);
-    background: var(--near-black);
-    transition: background 0.1s;
+  /* ── Order cards ── */
+  .order-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 10px;
   }
 
-  .shift-row:last-child { border-bottom: none; }
-  .shift-row:hover { background: var(--surface); }
+  .order-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+  }
 
-  .shift-row-top { display: flex; align-items: center; gap: 10px; }
-  .shift-row-bottom { display: flex; align-items: center; gap: 10px; }
-  .shift-row-spacer { flex: 1; }
-  .shift-unit-label { font-family: var(--mono); font-size: 12px; color: var(--text-dim); flex-shrink: 0; }
-
-  .shift-row-name {
+  .order-card-name {
+    font-size: 16px;
     font-weight: 600;
-    font-size: 15px;
     flex: 1;
-    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  /* ── Stepper ── */
-  .stepper { display: flex; align-items: center; }
-
-  .stepper-btn {
-    width: 32px;
-    height: 32px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-size: 18px;
-    line-height: 1;
-    cursor: pointer;
+  .order-card-controls {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.15s, background 0.15s;
-    flex-shrink: 0;
+    align-items: stretch;
+    padding: 0 16px 14px;
   }
-
-  .stepper-btn:first-child { border-radius: 5px 0 0 5px; }
-  .stepper-btn:last-child  { border-radius: 0 5px 5px 0; }
-  .stepper-btn:hover { background: var(--surface); color: var(--cream); }
-
-  .stepper-count {
-    min-width: 40px;
-    text-align: center;
-    font-family: var(--mono);
-    font-size: 16px;
-    font-weight: 700;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 6px 10px;
-    background: var(--surface2);
-    color: var(--text-dim);
-    transition: color 0.15s;
-  }
-
-  .stepper-count.below-par { color: var(--amber); }
-  .stepper-count.empty { color: var(--red); }
-
-  /* ── Stocked button ── */
-  .stocked-btn {
-    background: none;
-    border: 2px solid var(--border);
-    border-radius: 5px;
-    color: var(--text-dim);
-    font-family: var(--sans);
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    padding: 5px 0;
-    width: 128px;
-    text-align: center;
-    cursor: pointer;
-    white-space: nowrap;
-    flex-shrink: 0;
-    transition: color 0.15s, border-color 0.15s, background 0.15s;
-  }
-
-  .stocked-btn.needs-restock { color: var(--amber); border-color: var(--amber-dim); }
-  .stocked-btn.needs-restock:hover { background: rgba(232, 168, 56, 0.1); }
-  .stocked-btn:not(.needs-restock) { opacity: 0.3; cursor: default; }
-
-  /* ── Order flag button ── */
-  .order-flag-btn {
-    background: none;
-    border: 2px solid var(--border);
-    border-radius: 5px;
-    color: var(--text-dim);
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    padding: 5px 0;
-    width: 96px;
-    text-align: center;
-    cursor: pointer;
-    white-space: nowrap;
-    flex-shrink: 0;
-    transition: color 0.15s, border-color 0.15s, background 0.15s;
-  }
-
-  .order-flag-btn:hover { color: var(--amber); border-color: var(--amber-dim); }
-  .order-flag-btn.flagged { color: var(--amber); border-color: var(--amber-dim); background: rgba(232, 168, 56, 0.08); }
-
-  /* ── Order qty mini-stepper ── */
-  .order-qty-stepper { display: flex; align-items: center; flex-shrink: 0; }
 
   .order-qty-btn {
-    width: 26px;
-    height: 28px;
+    width: 48px;
+    height: 48px;
     background: var(--surface2);
     border: 1px solid var(--amber-dim);
     color: var(--amber);
-    font-size: 15px;
-    line-height: 1;
-    cursor: pointer;
+    font-size: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s;
-    flex-shrink: 0;
+    cursor: pointer;
+    font-family: var(--sans);
   }
 
-  .order-qty-btn:first-child { border-radius: 5px 0 0 5px; }
-  .order-qty-btn:last-child  { border-radius: 0 5px 5px 0; }
-  .order-qty-btn:hover { background: rgba(232, 168, 56, 0.15); }
+  .order-qty-btn:first-child { border-radius: 10px 0 0 10px; }
+  .order-qty-btn:last-child  { border-radius: 0 10px 10px 0; }
 
-  .order-qty-count {
-    min-width: 34px;
-    text-align: center;
-    font-family: var(--mono);
-    font-size: 14px;
-    font-weight: 700;
+  .order-qty-middle {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
     border-top: 1px solid var(--amber-dim);
     border-bottom: 1px solid var(--amber-dim);
-    padding: 4px 6px;
-    background: var(--surface2);
+    min-height: 48px;
+  }
+
+  .order-qty-count {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 700;
     color: var(--amber);
   }
 
-  /* ── Trash button ── */
-  .trash-btn {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    cursor: pointer;
-    padding: 6px 8px;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.15s, background 0.15s;
-  }
+  .order-qty-unit { font-size: 11px; color: var(--amber-dim); margin-top: 2px; }
 
-  .trash-btn:hover { color: var(--red); background: rgba(192, 57, 43, 0.1); }
-
-  /* ── Shift empty states ── */
-  .shift-empty { padding: 64px 0; text-align: center; }
-  .shift-empty-text {
+  .order-card-print-row {
+    display: none;
+    padding: 0 16px 12px;
     font-size: 14px;
-    font-weight: 500;
-    color: var(--text-dim);
-    letter-spacing: 0.3px;
+    color: #333;
   }
 
-  /* ── Order list ── */
-  .order-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
-  .order-title { font-size: 18px; font-weight: 700; color: var(--cream); flex: 1; }
-
+  /* ── Order header ── */
+  .order-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+  .order-title { font-size: 16px; font-weight: 700; color: var(--cream); flex: 1; }
   .order-empty { padding: 64px 0; text-align: center; }
   .order-empty-icon { font-size: 40px; opacity: 0.35; margin-bottom: 14px; }
   .order-empty-text { font-size: 14px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.3px; }
@@ -554,8 +633,8 @@ const STYLES = `
   .view-toggle-btn:not(.active):hover { color: var(--cream); background: var(--surface); }
 
   /* ── Stats tab ── */
-  .stats-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
-  .stats-title { font-size: 18px; font-weight: 700; color: var(--cream); flex: 1; }
+  .stats-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stats-title { font-size: 16px; font-weight: 700; color: var(--cream); flex: 1; }
 
   .stats-nav {
     display: flex;
@@ -590,6 +669,7 @@ const STYLES = `
     cursor: pointer;
     transition: color 0.15s, border-color 0.15s;
     white-space: nowrap;
+    font-family: var(--sans);
   }
 
   .stats-nav-btn:hover:not(:disabled) { color: var(--cream); border-color: var(--cream-dim); }
@@ -602,51 +682,20 @@ const STYLES = `
   .print-date { display: none; }
   .print-heading { display: none; }
 
-  /* ── Desktop: shift row in one horizontal line ── */
-  @media (min-width: 640px) {
-    .shift-row { flex-direction: row; align-items: center; gap: 14px; padding: 14px 20px; }
-    .shift-row-top { display: contents; }
-    .shift-row-bottom { display: contents; }
-    .shift-row-spacer { display: none; }
-    .order-flag-btn { order: 10; }
-    .stocked-btn { width: 128px; }
-    .order-flag-btn { width: 96px; }
-  }
-
-  /* ── Mobile ── */
-  @media (max-width: 639px) {
-    .header { padding: 14px 16px; }
-    .header-sub { display: none; }
-    .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .tab { padding: 12px 14px; font-size: 11px; flex-shrink: 0; white-space: nowrap; }
-    .main { padding: 20px 16px; }
-    .add-form { padding: 16px 18px; }
-    .categories-section { padding: 16px 18px; }
-    .stepper-btn { width: 44px; height: 44px; font-size: 20px; }
-    .stepper-count { min-width: 48px; font-size: 18px; padding: 8px 10px; }
-    .stocked-btn { width: auto; flex: 1; font-size: 13px; }
-    .order-flag-btn { width: auto; }
-    .stats-header { flex-wrap: wrap; }
-    .order-header { flex-wrap: wrap; }
-    .stats-nav { padding: 10px 14px; }
-    .shift-header { margin-bottom: 16px; }
-  }
-
   @media print {
-    .no-print { display: none !important; }
+    .bottom-nav { display: none !important; }
+    .header { display: none !important; }
     .main { padding: 0; }
-    .order-print-region { background: white; color: black; padding: 32px; }
-    .order-print-region .table-wrap { border: 1px solid #ccc; border-radius: 0; }
-    .order-print-region table { color: black; }
-    .order-print-region thead { background: #f0f0f0; }
-    .order-print-region thead th { color: #333; border-bottom: 1px solid #ccc; }
-    .order-print-region tbody tr { border-bottom: 1px solid #e0e0e0; }
-    .order-print-region tbody td { color: black; }
-    .order-print-region .cat-badge { background: #eee; color: #333; border: none; }
+    .order-card { background: white; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 8px; }
+    .order-card-header { border-bottom: 1px solid #eee; }
+    .order-card-name { color: black; }
+    .cat-badge { background: #eee; color: #333; border: none; }
+    .order-card-controls { display: none; }
+    .order-card-print-row { display: block; }
     .print-date { display: block; font-family: monospace; font-size: 12px; color: #555; margin-bottom: 8px; }
     .print-heading { display: block; font-size: 24px; font-weight: 700; color: black; margin-bottom: 20px; }
     body { background: white; }
-    .header, .tabs { display: none !important; }
+    .no-print { display: none !important; }
   }
 `;
 
@@ -734,43 +783,35 @@ function EditablePar({ value, onSave }) {
   );
 }
 
-// --- ShiftRow ---
-function ShiftRow({ item, onIncrement, onDecrement, onStocked, onAddToOrder }) {
+// --- ShiftCard ---
+function ShiftCard({ item, onIncrement, onDecrement, onStocked, onAddToOrder }) {
   const belowPar = item.left < item.par;
   const empty = item.left === 0;
   const ordered = (item.orderQty ?? 0) > 0;
-
-  const countClass = empty ? "stepper-count empty"
-    : belowPar ? "stepper-count below-par"
-    : "stepper-count";
-
+  const countClass = `card-stepper-count${empty ? " empty" : belowPar ? " below-par" : ""}`;
   return (
-    <div className="shift-row">
-      <div className="shift-row-top">
-        <span className="shift-row-name">{item.name}</span>
-        <button
-          className={`order-flag-btn${ordered ? " flagged" : ""}`}
-          onClick={() => onAddToOrder(item.id)}
-        >
+    <div className={`shift-card${belowPar ? " below-par" : ""}`}>
+      <div className="shift-card-header">
+        <span className="shift-card-name">{item.name}</span>
+        <button className={`order-pill${ordered ? " flagged" : ""}`} onClick={() => onAddToOrder(item.id)}>
           {ordered ? `⊕ ${item.orderQty}` : "⊕ Order"}
         </button>
       </div>
-      <div className="shift-row-bottom">
-        <div className="stepper">
-          <button className="stepper-btn" onClick={() => onDecrement(item.id)}>−</button>
+      <div className="shift-card-stepper">
+        <button className="card-stepper-btn" onClick={() => onDecrement(item.id)}>−</button>
+        <div className="card-stepper-middle">
           <span className={countClass}>{item.left}</span>
-          <button className="stepper-btn" onClick={() => onIncrement(item.id)}>+</button>
+          <span className="card-stepper-unit">{item.stockUnit}</span>
         </div>
-        <span className="shift-unit-label">{item.stockUnit}</span>
-        <span className="shift-row-spacer" />
-        <button
-          className={`stocked-btn${belowPar ? " needs-restock" : ""}`}
-          onClick={() => belowPar && onStocked(item.id)}
-          title={belowPar ? `Reset to par (${item.par})` : "Already at par"}
-        >
-          {belowPar ? `${item.par - item.left} Stocked` : "Stocked"}
-        </button>
+        <button className="card-stepper-btn" onClick={() => onIncrement(item.id)}>+</button>
       </div>
+      {belowPar && (
+        <div className="shift-card-footer">
+          <button className="stocked-btn-full" onClick={() => onStocked(item.id)}>
+            Pull {item.par - item.left} → Stocked
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -821,23 +862,21 @@ function Shift({ items, categories, onIncrement, onDecrement, onStocked, onAddTo
       </div>
 
       {groups.length === 0 ? renderEmpty() : (
-        <div className="shift-list">
-          {groups.map(({ cat, items: groupItems }) => (
-            <React.Fragment key={cat}>
-              <div className="shift-group-header">{cat}</div>
-              {groupItems.map(item => (
-                <ShiftRow
-                  key={item.id}
-                  item={item}
-                  onIncrement={onIncrement}
-                  onDecrement={onDecrement}
-                  onStocked={onStocked}
-                  onAddToOrder={onAddToOrder}
-                />
-              ))}
-            </React.Fragment>
-          ))}
-        </div>
+        groups.map(({ cat, items: groupItems }) => (
+          <div className="shift-group" key={cat}>
+            <div className="shift-group-label">{cat}</div>
+            {groupItems.map(item => (
+              <ShiftCard
+                key={item.id}
+                item={item}
+                onIncrement={onIncrement}
+                onDecrement={onDecrement}
+                onStocked={onStocked}
+                onAddToOrder={onAddToOrder}
+              />
+            ))}
+          </div>
+        ))
       )}
     </div>
   );
@@ -970,48 +1009,21 @@ function AddItemForm({ categories, onAdd }) {
   );
 }
 
-// --- ItemsTable ---
-function ItemsTable({ items, onDelete, onEditPar }) {
+// --- ItemCard ---
+function ItemCard({ item, onDelete, onEditPar }) {
   return (
-    <div className="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Stock unit</th>
-            <th>Order unit</th>
-            <th>Par</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.length === 0 && (
-            <tr>
-              <td
-                colSpan={6}
-                style={{ textAlign: "center", color: "var(--text-dim)", padding: "40px 0", fontFamily: "var(--mono)", fontSize: 12 }}
-              >
-                No items yet — add one above
-              </td>
-            </tr>
-          )}
-          {items.map(item => (
-            <tr key={item.id}>
-              <td style={{ fontWeight: 500 }}>{item.name}</td>
-              <td><span className="cat-badge">{item.category}</span></td>
-              <td className="mono" style={{ fontSize: 11, color: "var(--text-dim)" }}>{item.stockUnit}</td>
-              <td className="mono" style={{ fontSize: 11, color: "var(--text-dim)" }}>{item.orderUnit}</td>
-              <td>
-                <EditablePar value={item.par} onSave={v => onEditPar(item.id, v)} />
-              </td>
-              <td>
-                <button className="delete-btn" onClick={() => onDelete(item.id)} title="Delete item">✕</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="item-card">
+      <div className="item-card-header">
+        <span className="item-card-name">{item.name}</span>
+        <button className="trash-btn" onClick={() => onDelete(item.id)}><TrashIcon /></button>
+      </div>
+      <div className="item-card-meta">
+        <span className="cat-badge">{item.category}</span>
+        <span>·</span><span>{item.stockUnit}</span>
+        <span>·</span><span>{item.orderUnit}</span>
+        <span>· par</span>
+        <EditablePar value={item.par} onSave={v => onEditPar(item.id, v)} />
+      </div>
     </div>
   );
 }
@@ -1023,7 +1035,15 @@ function Items({ items, categories, onAdd, onDelete, onEditPar, onAddCategory, o
       <CategoriesManager categories={categories} items={items} onAdd={onAddCategory} onDelete={onDeleteCategory} />
       <AddItemForm categories={categories} onAdd={onAdd} />
       <div className="section-title">All Items</div>
-      <ItemsTable items={items} onDelete={onDelete} onEditPar={onEditPar} />
+      {items.length === 0 ? (
+        <div style={{ textAlign: "center", color: "var(--text-dim)", padding: "40px 0", fontFamily: "var(--mono)", fontSize: 12 }}>
+          No items yet — add one above
+        </div>
+      ) : (
+        items.map(item => (
+          <ItemCard key={item.id} item={item} onDelete={onDelete} onEditPar={onEditPar} />
+        ))
+      )}
     </div>
   );
 }
@@ -1044,56 +1064,36 @@ function OrderList({ items, onRemoveFromOrder, onIncrementOrderQty, onDecrementO
         </button>
       </div>
 
-      <div className="order-print-region">
-        <div className="print-date">{today}</div>
-        <div className="print-heading">Bar Stock — Order List</div>
+      <div className="print-date">{today}</div>
+      <div className="print-heading">Bar Stock — Order List</div>
 
-        {flagged.length === 0 ? (
-          <div className="order-empty">
-            <div className="order-empty-icon">✓</div>
-            <div className="order-empty-text">Nothing flagged for order</div>
+      {flagged.length === 0 ? (
+        <div className="order-empty">
+          <div className="order-empty-icon">✓</div>
+          <div className="order-empty-text">Nothing flagged for order</div>
+        </div>
+      ) : (
+        flagged.map(item => (
+          <div className="order-card" key={item.id}>
+            <div className="order-card-header">
+              <span className="order-card-name">{item.name}</span>
+              <span className="cat-badge">{item.category}</span>
+              <button className="trash-btn" onClick={() => onRemoveFromOrder(item.id)} title="Remove from order">
+                <TrashIcon />
+              </button>
+            </div>
+            <div className="order-card-controls">
+              <button className="order-qty-btn" onClick={() => onDecrementOrderQty(item.id)}>−</button>
+              <div className="order-qty-middle">
+                <span className="order-qty-count">{item.orderQty}</span>
+                <span className="order-qty-unit">{item.orderUnit}</span>
+              </div>
+              <button className="order-qty-btn" onClick={() => onIncrementOrderQty(item.id)}>+</button>
+            </div>
+            <div className="order-card-print-row">{item.orderQty} × {item.orderUnit}</div>
           </div>
-        ) : (
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Category</th>
-                  <th className="no-print">Qty</th>
-                  <th>Order unit</th>
-                  <th className="no-print"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {flagged.map(item => (
-                  <tr key={item.id}>
-                    <td style={{ fontWeight: 500 }}>{item.name}</td>
-                    <td><span className="cat-badge">{item.category}</span></td>
-                    <td className="no-print">
-                      <div className="order-qty-stepper">
-                        <button className="order-qty-btn" onClick={() => onDecrementOrderQty(item.id)}>−</button>
-                        <span className="order-qty-count">{item.orderQty}</span>
-                        <button className="order-qty-btn" onClick={() => onIncrementOrderQty(item.id)}>+</button>
-                      </div>
-                    </td>
-                    <td className="mono" style={{ fontSize: 11, color: "var(--text-dim)" }}>{item.orderUnit}</td>
-                    <td className="no-print">
-                      <button
-                        className="trash-btn"
-                        onClick={() => onRemoveFromOrder(item.id)}
-                        title="Remove from order"
-                      >
-                        <TrashIcon />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+        ))
+      )}
     </div>
   );
 }
@@ -1306,7 +1306,6 @@ export default function App() {
     });
   }
 
-
   function restockAll() {
     setItems(prev => {
       const belowPar = prev.filter(i => i.left < i.par);
@@ -1322,11 +1321,14 @@ export default function App() {
     setRecords([]);
   }
 
+  const belowParCount = items.filter(i => i.left < i.par).length;
+  const orderCount = items.filter(i => i.orderFlag).length;
+
   const TABS = [
-    { id: "shift", label: "01 / SHIFT" },
-    { id: "items", label: "02 / ITEMS" },
-    { id: "order", label: "03 / ORDER LIST" },
-    { id: "stats", label: "04 / STATS" },
+    { id: "shift", label: "Shift" },
+    { id: "items", label: "Items" },
+    { id: "order", label: "Order" },
+    { id: "stats", label: "Stats" },
   ];
 
   return (
@@ -1335,19 +1337,6 @@ export default function App() {
       <div className="app">
         <div className="header no-print">
           <div className="header-title">Bar Stock</div>
-          <div className="header-sub">Shift Tracking · Order Management</div>
-        </div>
-
-        <div className="tabs no-print">
-          {TABS.map(t => (
-            <button
-              key={t.id}
-              className={`tab ${tab === t.id ? "active" : ""}`}
-              onClick={() => setTab(t.id)}
-            >
-              {t.label}
-            </button>
-          ))}
         </div>
 
         <div className="main">
@@ -1385,6 +1374,24 @@ export default function App() {
             <Stats records={records} onClear={clearHistory} />
           )}
         </div>
+
+        <nav className="bottom-nav no-print">
+          {TABS.map(t => (
+            <button
+              key={t.id}
+              className={`bottom-nav-btn${tab === t.id ? " active" : ""}`}
+              onClick={() => setTab(t.id)}
+            >
+              {t.id === "shift" && belowParCount > 0 && (
+                <span className="bottom-nav-badge">{belowParCount}</span>
+              )}
+              {t.id === "order" && orderCount > 0 && (
+                <span className="bottom-nav-badge">{orderCount}</span>
+              )}
+              {t.label}
+            </button>
+          ))}
+        </nav>
       </div>
     </>
   );
