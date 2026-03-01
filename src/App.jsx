@@ -1253,18 +1253,27 @@ export default function App() {
   const [records, setRecords] = useState([]);
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
   const [loading, setLoading] = useState(true);
+  const [dbError, setDbError] = useState(null);
 
   useEffect(() => {
     async function loadAll() {
       const [
-        { data: itemRows },
-        { data: recordRows },
-        { data: categoryRows },
+        { data: itemRows,     error: e1 },
+        { data: recordRows,   error: e2 },
+        { data: categoryRows, error: e3 },
       ] = await Promise.all([
         supabase.from("items").select("*").order("name"),
         supabase.from("records").select("*").order("timestamp"),
         supabase.from("categories").select("*").order("name"),
       ]);
+
+      const err = e1 ?? e2 ?? e3;
+      if (err) {
+        console.error("Supabase load error:", err);
+        setDbError(err.message);
+        setLoading(false);
+        return;
+      }
 
       setItems((itemRows ?? []).map(rowToItem));
       setRecords((recordRows ?? []).map(rowToRecord));
@@ -1273,7 +1282,8 @@ export default function App() {
         setCategories(categoryRows.map(r => r.name));
       } else {
         // Seed defaults on first run
-        await supabase.from("categories").insert(DEFAULT_CATEGORIES.map(name => ({ name })));
+        const { error: catErr } = await supabase.from("categories").insert(DEFAULT_CATEGORIES.map(name => ({ name })));
+        if (catErr) console.error("Category seed error:", catErr);
       }
 
       setLoading(false);
@@ -1295,10 +1305,14 @@ export default function App() {
     };
   }
 
+  function db(promise) {
+    promise.then(({ error }) => { if (error) console.error("Supabase write error:", error); });
+  }
+
   function addItem({ name, category, stockUnit, orderUnit, par }) {
     const newItem = { id: crypto.randomUUID(), name, category, stockUnit, orderUnit, par, left: par, orderFlag: false, orderQty: 0 };
     setItems(prev => [...prev, newItem]);
-    supabase.from("items").insert(itemToRow(newItem));
+    db(supabase.from("items").insert(itemToRow(newItem)));
   }
 
   function addToOrder(id) {
@@ -1306,12 +1320,12 @@ export default function App() {
     if (!item) return;
     const newQty = (item.orderQty ?? 0) + 1;
     setItems(prev => prev.map(i => i.id === id ? { ...i, orderFlag: true, orderQty: newQty } : i));
-    supabase.from("items").update({ order_flag: true, order_qty: newQty }).eq("id", id);
+    db(supabase.from("items").update({ order_flag: true, order_qty: newQty }).eq("id", id));
   }
 
   function removeFromOrder(id) {
     setItems(prev => prev.map(i => i.id === id ? { ...i, orderFlag: false, orderQty: 0 } : i));
-    supabase.from("items").update({ order_flag: false, order_qty: 0 }).eq("id", id);
+    db(supabase.from("items").update({ order_flag: false, order_qty: 0 }).eq("id", id));
   }
 
   function incrementOrderQty(id) {
@@ -1319,7 +1333,7 @@ export default function App() {
     if (!item) return;
     const newQty = (item.orderQty ?? 0) + 1;
     setItems(prev => prev.map(i => i.id === id ? { ...i, orderQty: newQty } : i));
-    supabase.from("items").update({ order_qty: newQty }).eq("id", id);
+    db(supabase.from("items").update({ order_qty: newQty }).eq("id", id));
   }
 
   function decrementOrderQty(id) {
@@ -1327,27 +1341,27 @@ export default function App() {
     if (!item) return;
     const newQty = Math.max(1, (item.orderQty ?? 1) - 1);
     setItems(prev => prev.map(i => i.id === id ? { ...i, orderQty: newQty } : i));
-    supabase.from("items").update({ order_qty: newQty }).eq("id", id);
+    db(supabase.from("items").update({ order_qty: newQty }).eq("id", id));
   }
 
   function deleteItem(id) {
     setItems(prev => prev.filter(i => i.id !== id));
-    supabase.from("items").delete().eq("id", id);
+    db(supabase.from("items").delete().eq("id", id));
   }
 
   function editPar(id, value) {
     setItems(prev => prev.map(i => i.id === id ? { ...i, par: value } : i));
-    supabase.from("items").update({ par: value }).eq("id", id);
+    db(supabase.from("items").update({ par: value }).eq("id", id));
   }
 
   function addCategory(name) {
     setCategories(prev => [...prev, name]);
-    supabase.from("categories").insert({ name });
+    db(supabase.from("categories").insert({ name }));
   }
 
   function deleteCategory(name) {
     setCategories(prev => prev.filter(c => c !== name));
-    supabase.from("categories").delete().eq("name", name);
+    db(supabase.from("categories").delete().eq("name", name));
   }
 
   function increment(id) {
@@ -1355,7 +1369,7 @@ export default function App() {
     if (!item) return;
     const newLeft = item.left + 1;
     setItems(prev => prev.map(i => i.id === id ? { ...i, left: newLeft } : i));
-    supabase.from("items").update({ left_count: newLeft }).eq("id", id);
+    db(supabase.from("items").update({ left_count: newLeft }).eq("id", id));
   }
 
   function decrement(id) {
@@ -1363,7 +1377,7 @@ export default function App() {
     if (!item) return;
     const newLeft = Math.max(0, item.left - 1);
     setItems(prev => prev.map(i => i.id === id ? { ...i, left: newLeft } : i));
-    supabase.from("items").update({ left_count: newLeft }).eq("id", id);
+    db(supabase.from("items").update({ left_count: newLeft }).eq("id", id));
   }
 
   function stocked(id) {
@@ -1372,10 +1386,10 @@ export default function App() {
     if (item.left < item.par) {
       const record = makeRecord(item);
       setRecords(prev => [...prev, record]);
-      supabase.from("records").insert(recordToRow(record));
+      db(supabase.from("records").insert(recordToRow(record)));
     }
     setItems(prev => prev.map(i => i.id === id ? { ...i, left: i.par } : i));
-    supabase.from("items").update({ left_count: item.par }).eq("id", id);
+    db(supabase.from("items").update({ left_count: item.par }).eq("id", id));
   }
 
   function restockAll() {
@@ -1384,15 +1398,15 @@ export default function App() {
     if (belowPar.length > 0) {
       const newRecords = belowPar.map(item => ({ ...makeRecord(item), timestamp: now }));
       setRecords(prev => [...prev, ...newRecords]);
-      supabase.from("records").insert(newRecords.map(recordToRow));
+      db(supabase.from("records").insert(newRecords.map(recordToRow)));
     }
     setItems(prev => prev.map(i => ({ ...i, left: i.par })));
-    supabase.from("items").upsert(items.map(i => ({ ...itemToRow(i), left_count: i.par })));
+    db(supabase.from("items").upsert(items.map(i => ({ ...itemToRow(i), left_count: i.par }))));
   }
 
   function clearHistory() {
     setRecords([]);
-    supabase.from("records").delete().gte("timestamp", 0);
+    db(supabase.from("records").delete().gte("timestamp", 0));
   }
 
   if (loading) {
@@ -1402,6 +1416,34 @@ export default function App() {
         <div className="app" style={{ alignItems: "center", justifyContent: "center" }}>
           <div style={{ color: "var(--text-dim)", fontSize: 14, letterSpacing: 2, textTransform: "uppercase" }}>
             Loading…
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (dbError) {
+    return (
+      <>
+        <style>{STYLES}</style>
+        <div className="app" style={{ alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <div style={{ maxWidth: 400, width: "100%", textAlign: "center" }}>
+            <div style={{ color: "var(--red)", fontSize: 18, fontWeight: 700, marginBottom: 12 }}>
+              Database Error
+            </div>
+            <div style={{ color: "var(--text-dim)", fontSize: 14, fontFamily: "var(--mono)", background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 8, padding: "12px 16px", textAlign: "left", wordBreak: "break-all" }}>
+              {dbError}
+            </div>
+            <div style={{ color: "var(--text-dim)", fontSize: 12, marginTop: 16 }}>
+              Check that your Supabase tables exist and RLS policies allow public access.
+            </div>
+            <button
+              className="btn btn-primary"
+              style={{ marginTop: 20 }}
+              onClick={() => { setDbError(null); setLoading(true); window.location.reload(); }}
+            >
+              Retry
+            </button>
           </div>
         </div>
       </>
