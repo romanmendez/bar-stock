@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { supabase, rowToItem, itemToRow, rowToRecord, recordToRow } from "./supabase";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -711,34 +712,8 @@ const STYLES = `
   }
 `;
 
-const ITEMS_KEY = "bar-stock-items";
-const RECORDS_KEY = "bar-stock-records";
-const CATEGORIES_KEY = "bar-stock-categories";
 const UNITS = ["bottles", "cans", "kegs", "boxes", "cases", "litres", "units"];
 const DEFAULT_CATEGORIES = ["Spirits", "Wine", "Beer", "Mixers", "Soft Drinks", "Other"];
-
-function load(key, fallback = []) {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function save(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
-}
-
-// Migrate items from old schemas
-function loadItems() {
-  return load(ITEMS_KEY).map(item => ({
-    ...item,
-    stockUnit: item.stockUnit ?? item.unit ?? "units",
-    orderUnit: item.orderUnit ?? item.unit ?? "units",
-    orderQty: item.orderQty ?? 0,
-  }));
-}
 
 // --- TrashIcon ---
 const TrashIcon = () => (
@@ -1274,101 +1249,163 @@ function Stats({ records, onClear }) {
 export default function App() {
   const [tab, setTab] = useState("shift");
   const [showAll, setShowAll] = useState(true);
-  const [items, setItems] = useState(loadItems);
-  const [records, setRecords] = useState(() => load(RECORDS_KEY));
-  const [categories, setCategories] = useState(() => load(CATEGORIES_KEY, DEFAULT_CATEGORIES));
+  const [items, setItems] = useState([]);
+  const [records, setRecords] = useState([]);
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => { save(ITEMS_KEY, items); }, [items]);
-  useEffect(() => { save(RECORDS_KEY, records); }, [records]);
-  useEffect(() => { save(CATEGORIES_KEY, categories); }, [categories]);
+  useEffect(() => {
+    async function loadAll() {
+      const [
+        { data: itemRows },
+        { data: recordRows },
+        { data: categoryRows },
+      ] = await Promise.all([
+        supabase.from("items").select("*").order("name"),
+        supabase.from("records").select("*").order("timestamp"),
+        supabase.from("categories").select("*").order("name"),
+      ]);
+
+      setItems((itemRows ?? []).map(rowToItem));
+      setRecords((recordRows ?? []).map(rowToRecord));
+
+      if (categoryRows && categoryRows.length > 0) {
+        setCategories(categoryRows.map(r => r.name));
+      } else {
+        // Seed defaults on first run
+        await supabase.from("categories").insert(DEFAULT_CATEGORIES.map(name => ({ name })));
+      }
+
+      setLoading(false);
+    }
+    loadAll();
+  }, []);
 
   function makeRecord(item) {
     return {
-      id: crypto.randomUUID(),
+      id:        crypto.randomUUID(),
       timestamp: Date.now(),
-      itemId: item.id,
-      itemName: item.name,
-      category: item.category,
-      unit: item.stockUnit,
-      used: item.par - item.left,
-      left: item.left,
-      par: item.par,
+      itemId:    item.id,
+      itemName:  item.name,
+      category:  item.category,
+      unit:      item.stockUnit,
+      used:      item.par - item.left,
+      left:      item.left,
+      par:       item.par,
     };
   }
 
   function addItem({ name, category, stockUnit, orderUnit, par }) {
-    setItems(prev => [...prev, { id: crypto.randomUUID(), name, category, stockUnit, orderUnit, par, left: par, orderFlag: false, orderQty: 0 }]);
+    const newItem = { id: crypto.randomUUID(), name, category, stockUnit, orderUnit, par, left: par, orderFlag: false, orderQty: 0 };
+    setItems(prev => [...prev, newItem]);
+    supabase.from("items").insert(itemToRow(newItem));
   }
 
   function addToOrder(id) {
-    setItems(prev => prev.map(i => i.id === id
-      ? { ...i, orderFlag: true, orderQty: (i.orderQty ?? 0) + 1 }
-      : i
-    ));
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    const newQty = (item.orderQty ?? 0) + 1;
+    setItems(prev => prev.map(i => i.id === id ? { ...i, orderFlag: true, orderQty: newQty } : i));
+    supabase.from("items").update({ order_flag: true, order_qty: newQty }).eq("id", id);
   }
 
   function removeFromOrder(id) {
-    setItems(prev => prev.map(i => i.id === id
-      ? { ...i, orderFlag: false, orderQty: 0 }
-      : i
-    ));
+    setItems(prev => prev.map(i => i.id === id ? { ...i, orderFlag: false, orderQty: 0 } : i));
+    supabase.from("items").update({ order_flag: false, order_qty: 0 }).eq("id", id);
   }
 
   function incrementOrderQty(id) {
-    setItems(prev => prev.map(i => i.id === id ? { ...i, orderQty: (i.orderQty ?? 0) + 1 } : i));
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    const newQty = (item.orderQty ?? 0) + 1;
+    setItems(prev => prev.map(i => i.id === id ? { ...i, orderQty: newQty } : i));
+    supabase.from("items").update({ order_qty: newQty }).eq("id", id);
   }
 
   function decrementOrderQty(id) {
-    setItems(prev => prev.map(i => i.id === id ? { ...i, orderQty: Math.max(1, (i.orderQty ?? 1) - 1) } : i));
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    const newQty = Math.max(1, (item.orderQty ?? 1) - 1);
+    setItems(prev => prev.map(i => i.id === id ? { ...i, orderQty: newQty } : i));
+    supabase.from("items").update({ order_qty: newQty }).eq("id", id);
   }
 
   function deleteItem(id) {
     setItems(prev => prev.filter(i => i.id !== id));
+    supabase.from("items").delete().eq("id", id);
   }
 
   function editPar(id, value) {
     setItems(prev => prev.map(i => i.id === id ? { ...i, par: value } : i));
+    supabase.from("items").update({ par: value }).eq("id", id);
   }
 
   function addCategory(name) {
     setCategories(prev => [...prev, name]);
+    supabase.from("categories").insert({ name });
   }
 
   function deleteCategory(name) {
     setCategories(prev => prev.filter(c => c !== name));
+    supabase.from("categories").delete().eq("name", name);
   }
 
   function increment(id) {
-    setItems(prev => prev.map(i => i.id === id ? { ...i, left: i.left + 1 } : i));
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    const newLeft = item.left + 1;
+    setItems(prev => prev.map(i => i.id === id ? { ...i, left: newLeft } : i));
+    supabase.from("items").update({ left_count: newLeft }).eq("id", id);
   }
 
   function decrement(id) {
-    setItems(prev => prev.map(i => i.id === id ? { ...i, left: Math.max(0, i.left - 1) } : i));
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    const newLeft = Math.max(0, item.left - 1);
+    setItems(prev => prev.map(i => i.id === id ? { ...i, left: newLeft } : i));
+    supabase.from("items").update({ left_count: newLeft }).eq("id", id);
   }
 
   function stocked(id) {
-    setItems(prev => {
-      const item = prev.find(i => i.id === id);
-      if (item && item.left < item.par) {
-        setRecords(r => [...r, makeRecord(item)]);
-      }
-      return prev.map(i => i.id === id ? { ...i, left: i.par } : i);
-    });
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    if (item.left < item.par) {
+      const record = makeRecord(item);
+      setRecords(prev => [...prev, record]);
+      supabase.from("records").insert(recordToRow(record));
+    }
+    setItems(prev => prev.map(i => i.id === id ? { ...i, left: i.par } : i));
+    supabase.from("items").update({ left_count: item.par }).eq("id", id);
   }
 
   function restockAll() {
-    setItems(prev => {
-      const belowPar = prev.filter(i => i.left < i.par);
-      if (belowPar.length > 0) {
-        const now = Date.now();
-        setRecords(r => [...r, ...belowPar.map(item => ({ ...makeRecord(item), timestamp: now }))]);
-      }
-      return prev.map(i => ({ ...i, left: i.par }));
-    });
+    const belowPar = items.filter(i => i.left < i.par);
+    const now = Date.now();
+    if (belowPar.length > 0) {
+      const newRecords = belowPar.map(item => ({ ...makeRecord(item), timestamp: now }));
+      setRecords(prev => [...prev, ...newRecords]);
+      supabase.from("records").insert(newRecords.map(recordToRow));
+    }
+    setItems(prev => prev.map(i => ({ ...i, left: i.par })));
+    supabase.from("items").upsert(items.map(i => ({ ...itemToRow(i), left_count: i.par })));
   }
 
   function clearHistory() {
     setRecords([]);
+    supabase.from("records").delete().gte("timestamp", 0);
+  }
+
+  if (loading) {
+    return (
+      <>
+        <style>{STYLES}</style>
+        <div className="app" style={{ alignItems: "center", justifyContent: "center" }}>
+          <div style={{ color: "var(--text-dim)", fontSize: 14, letterSpacing: 2, textTransform: "uppercase" }}>
+            Loading…
+          </div>
+        </div>
+      </>
+    );
   }
 
   const belowParCount = items.filter(i => i.left < i.par).length;
