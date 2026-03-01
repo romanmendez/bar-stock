@@ -27,7 +27,7 @@ const STYLES = `
     background: var(--black);
     color: var(--text);
     font-family: var(--sans);
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
   }
@@ -48,10 +48,10 @@ const STYLES = `
   }
 
   .header-title {
-    font-size: 16px;
+    font-size: 22px;
     font-weight: 800;
     color: var(--amber);
-    letter-spacing: 4px;
+    letter-spacing: 2px;
     text-transform: uppercase;
   }
 
@@ -64,7 +64,7 @@ const STYLES = `
     border-radius: 20px;
     background: var(--surface2);
     border: 1px solid var(--border);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     color: var(--text-dim);
     letter-spacing: 0.3px;
@@ -76,7 +76,7 @@ const STYLES = `
     padding: 9px 20px;
     border-radius: 5px;
     font-family: var(--sans);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.8px;
     text-transform: uppercase;
@@ -105,7 +105,7 @@ const STYLES = `
   }
 
   .add-form-title {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: 2px;
     color: var(--amber);
@@ -118,7 +118,7 @@ const STYLES = `
   .form-field.grow { flex: 1; min-width: 160px; }
 
   .form-label {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 1.2px;
     color: var(--text-dim);
@@ -131,7 +131,7 @@ const STYLES = `
     border-radius: 5px;
     color: var(--text);
     font-family: var(--sans);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 400;
     padding: 9px 12px;
     outline: none;
@@ -154,12 +154,12 @@ const STYLES = `
   /* ── Table ── */
   .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
 
-  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
   thead { background: var(--surface2); }
 
   thead th {
     padding: 12px 16px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 1.2px;
     color: var(--text-dim);
@@ -174,7 +174,7 @@ const STYLES = `
   tbody tr:hover { background: var(--surface); }
 
   tbody td { padding: 12px 16px; color: var(--text); vertical-align: middle; }
-  tbody td.mono { font-family: var(--mono); font-size: 13px; }
+  tbody td.mono { font-family: var(--mono); font-size: 14px; }
 
   .delete-btn {
     background: none;
@@ -191,7 +191,7 @@ const STYLES = `
   .delete-btn:hover { color: var(--red); background: rgba(192, 57, 43, 0.1); }
 
   .section-title {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     letter-spacing: 1.5px;
     text-transform: uppercase;
@@ -202,7 +202,7 @@ const STYLES = `
   /* ── Editable par ── */
   .par-span {
     font-family: var(--mono);
-    font-size: 14px;
+    font-size: 15px;
     color: var(--text-dim);
     cursor: pointer;
     padding: 4px 8px;
@@ -221,7 +221,7 @@ const STYLES = `
     border-radius: 4px;
     color: var(--text);
     font-family: var(--mono);
-    font-size: 14px;
+    font-size: 15px;
     padding: 4px 8px;
     outline: none;
   }
@@ -245,7 +245,7 @@ const STYLES = `
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: 20px;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--text);
   }
@@ -255,7 +255,7 @@ const STYLES = `
     border: none;
     color: var(--text-dim);
     cursor: pointer;
-    font-size: 12px;
+    font-size: 13px;
     padding: 0;
     line-height: 1;
     transition: color 0.15s;
@@ -302,18 +302,13 @@ const STYLES = `
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
     position: relative;
     background: none;
     border: none;
     color: var(--text-dim);
     cursor: pointer;
-    padding: 8px 4px;
+    padding: 10px 4px;
     transition: color 0.15s;
-    font-family: var(--sans);
   }
 
   .bottom-nav-btn.active { color: var(--amber); }
@@ -325,7 +320,7 @@ const STYLES = `
     background: var(--amber);
     color: var(--black);
     border-radius: 10px;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 800;
     min-width: 18px;
     text-align: center;
@@ -337,7 +332,7 @@ const STYLES = `
   .shift-group { margin-bottom: 20px; }
 
   .shift-group-label {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
@@ -365,7 +360,7 @@ const STYLES = `
   }
 
   .shift-card-name {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     flex: 1;
     overflow: hidden;
@@ -420,7 +415,7 @@ const STYLES = `
   .card-stepper-count.empty { color: var(--red); }
 
   .card-stepper-unit {
-    font-size: 11px;
+    font-size: 13px;
     color: var(--text-dim);
     margin-top: 3px;
   }
@@ -436,7 +431,7 @@ const STYLES = `
     background: rgba(232,168,56,0.08);
     color: var(--amber);
     font-weight: 700;
-    font-size: 14px;
+    font-size: 15px;
     cursor: pointer;
     font-family: var(--sans);
   }
@@ -449,7 +444,7 @@ const STYLES = `
     border: 2px solid var(--border);
     border-radius: 20px;
     font-family: var(--sans);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     white-space: nowrap;
     flex-shrink: 0;
@@ -468,7 +463,7 @@ const STYLES = `
   .shift-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
 
   .shift-count-badge {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     background: var(--surface2);
     border: 1px solid var(--border);
@@ -485,7 +480,7 @@ const STYLES = `
     border: 2px solid var(--border);
     border-radius: 5px;
     color: var(--text-dim);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.8px;
     text-transform: uppercase;
@@ -500,7 +495,7 @@ const STYLES = `
 
   /* ── Shift empty states ── */
   .shift-empty { padding: 64px 0; text-align: center; }
-  .shift-empty-text { font-size: 14px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.3px; }
+  .shift-empty-text { font-size: 15px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.3px; }
 
   /* ── Item cards ── */
   .item-card {
@@ -517,7 +512,7 @@ const STYLES = `
     padding: 14px 16px 10px;
   }
 
-  .item-card-name { font-size: 16px; font-weight: 600; flex: 1; }
+  .item-card-name { font-size: 18px; font-weight: 600; flex: 1; }
 
   .item-card-meta {
     display: flex;
@@ -525,7 +520,7 @@ const STYLES = `
     gap: 8px;
     flex-wrap: wrap;
     padding: 0 16px 14px;
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-dim);
   }
 
@@ -545,7 +540,7 @@ const STYLES = `
   }
 
   .order-card-name {
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     flex: 1;
     overflow: hidden;
@@ -595,21 +590,21 @@ const STYLES = `
     color: var(--amber);
   }
 
-  .order-qty-unit { font-size: 11px; color: var(--amber-dim); margin-top: 2px; }
+  .order-qty-unit { font-size: 13px; color: var(--amber-dim); margin-top: 2px; }
 
   .order-card-print-row {
     display: none;
     padding: 0 16px 12px;
-    font-size: 14px;
+    font-size: 15px;
     color: #333;
   }
 
   /* ── Order header ── */
   .order-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
-  .order-title { font-size: 16px; font-weight: 700; color: var(--cream); flex: 1; }
+  .order-title { font-size: 18px; font-weight: 700; color: var(--cream); flex: 1; }
   .order-empty { padding: 64px 0; text-align: center; }
   .order-empty-icon { font-size: 40px; opacity: 0.35; margin-bottom: 14px; }
-  .order-empty-text { font-size: 14px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.3px; }
+  .order-empty-text { font-size: 15px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.3px; }
 
   /* ── View toggle (stats) ── */
   .view-toggle { display: flex; border: 2px solid var(--border); border-radius: 5px; overflow: hidden; }
@@ -617,7 +612,7 @@ const STYLES = `
   .view-toggle-btn {
     padding: 7px 16px;
     font-family: var(--sans);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.8px;
     text-transform: uppercase;
@@ -634,7 +629,7 @@ const STYLES = `
 
   /* ── Stats tab ── */
   .stats-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
-  .stats-title { font-size: 16px; font-weight: 700; color: var(--cream); flex: 1; }
+  .stats-title { font-size: 18px; font-weight: 700; color: var(--cream); flex: 1; }
 
   .stats-nav {
     display: flex;
@@ -650,7 +645,7 @@ const STYLES = `
   .stats-nav-label {
     flex: 1;
     text-align: center;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
     color: var(--cream);
     letter-spacing: 0.2px;
@@ -661,7 +656,7 @@ const STYLES = `
     border: 2px solid var(--border);
     border-radius: 5px;
     color: var(--text-dim);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     letter-spacing: 0.5px;
     text-transform: uppercase;
@@ -676,7 +671,7 @@ const STYLES = `
   .stats-nav-btn:disabled { opacity: 0.25; cursor: default; }
 
   .stats-empty { padding: 64px 0; text-align: center; }
-  .stats-empty-text { font-size: 14px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.3px; }
+  .stats-empty-text { font-size: 15px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.3px; }
 
   /* ── Print ── */
   .print-date { display: none; }
@@ -732,6 +727,40 @@ function loadItems() {
 const TrashIcon = () => (
   <svg width="14" height="15" viewBox="0 0 14 15" fill="none" aria-hidden="true">
     <path d="M1 3.5h12M4.5 3.5V2.5a.5.5 0 01.5-.5h3a.5.5 0 01.5.5v1M5.5 6.5v5M8.5 6.5v5M2.5 3.5l.5 9a.5.5 0 00.5.5h7a.5.5 0 00.5-.5l.5-9" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+// --- Nav Icons ---
+const ShiftIcon = () => (
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="5" y="3" width="14" height="18" rx="2"/>
+    <path d="M9 3v2h6V3"/>
+    <path d="M9 10h6M9 14h4"/>
+  </svg>
+);
+
+const ItemsIcon = () => (
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+    <line x1="12" y1="22.08" x2="12" y2="12"/>
+  </svg>
+);
+
+const OrderIcon = () => (
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="9" cy="21" r="1"/>
+    <circle cx="20" cy="21" r="1"/>
+    <path d="M1 1h4l2.68 13.39a2 2 0 001.96 1.61h9.72a2 2 0 001.96-1.61L23 6H6"/>
+  </svg>
+);
+
+const StatsIcon = () => (
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <line x1="18" y1="20" x2="18" y2="10"/>
+    <line x1="12" y1="20" x2="12" y2="4"/>
+    <line x1="6" y1="20" x2="6" y2="14"/>
+    <line x1="2" y1="20" x2="22" y2="20"/>
   </svg>
 );
 
@@ -1325,10 +1354,10 @@ export default function App() {
   const orderCount = items.filter(i => i.orderFlag).length;
 
   const TABS = [
-    { id: "shift", label: "Shift" },
-    { id: "items", label: "Items" },
-    { id: "order", label: "Order" },
-    { id: "stats", label: "Stats" },
+    { id: "shift", label: "Shift",  icon: <ShiftIcon /> },
+    { id: "items", label: "Items",  icon: <ItemsIcon /> },
+    { id: "order", label: "Order",  icon: <OrderIcon /> },
+    { id: "stats", label: "Stats",  icon: <StatsIcon /> },
   ];
 
   return (
@@ -1336,7 +1365,7 @@ export default function App() {
       <style>{STYLES}</style>
       <div className="app">
         <div className="header no-print">
-          <div className="header-title">Bar Stock</div>
+          <div className="header-title">{TABS.find(t => t.id === tab)?.label}</div>
         </div>
 
         <div className="main">
@@ -1388,7 +1417,7 @@ export default function App() {
               {t.id === "order" && orderCount > 0 && (
                 <span className="bottom-nav-badge">{orderCount}</span>
               )}
-              {t.label}
+              {t.icon}
             </button>
           ))}
         </nav>
